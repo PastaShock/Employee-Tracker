@@ -1,0 +1,23 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "an app to create, add and update employees and roles",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PastaShock/Employee-Tracker.git"
+  },
+  "author": "George Pastushok",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/PastaShock/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/PastaShock/Employee-Tracker#readme",
+  "dependencies": {
+    "inquirer": "^8.2.1",
+    "mysql2": "^2.3.3"
+  }
+}
