@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { manager } = require('../../models');
+const { Manager } = require('../../models');
 
 // CREATE a manager
 router.post('/', async (req, res) => {

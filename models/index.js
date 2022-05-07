@@ -1,6 +1,6 @@
-const Employee = require('./Employee');
-const Role = require('./Role');
-const Manager = require('./Manager');
+const Employee = require('./employee');
+const Role = require('./role');
+const Manager = require('./manager');
 
 Employee.belongsToMany(Role, {
   // Define the third table needed to store the foreign keys

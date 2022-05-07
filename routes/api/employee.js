@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { employee, Manager, Role } = require('../../models');
+const { Employee, Manager, Role } = require('../../models');
 
 // GET all employees
 router.get('/', async (req, res) => {

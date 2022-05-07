@@ -1,17 +1,25 @@
+// import { selectRole, selectManager } from 'index' 
+
+mainMenuChoices  = [
+    'View all employees',
+    'employees by role',
+    'Employes by department',
+    'Update employees',
+    'Add employee',
+    'View role',
+    'Add Role',
+    'update role',
+    'View departments',
+    'Add Department',
+    'quit'
+]
+
  const inquiries =
     {
         type: 'list',
         message: 'please choose an option',
         name: 'option',
-        choices: [
-            'View all employees',
-            'employees by role',
-            'Employes by department',
-            'Update employees',
-            'Add employee',
-            'Add Role',
-            'Add Department'
-        ]
+        choices: [...mainMenuChoices]
     };
 
 const addEmployee = [
@@ -29,22 +37,14 @@ const addEmployee = [
         name: 'role',
         type: 'list',
         message: 'What is the Employee\'s role?',
-        choices: selectRole()
+        choices: ['array', 'of', 'stuff']
     },
     {
         name: 'manager',
         type: 'rawlist',
         message: 'Who does the employee report to?',
-        choices: selectManager()
+        choices: ['array', 'of', 'stuff']
     },
 ]
 
-function selectRole() {
-    console.log('placeholder')
-}
-
-function selectManager() {
-    console.log('placeholder')
-}
-
-module.exports = inquiries, addEmployee
+module.exports = inquiries, addEmployee, mainMenuChoices
