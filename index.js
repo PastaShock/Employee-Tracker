@@ -23,13 +23,15 @@ console.log(
 )
 
 function initial() {
-    inquirer.prompt(inquiries[0])
+    inquirer.prompt(inquiries[0]).then(answers => {
+        console.info('Selection: ', answers.option)
+    })
 }
 
 initial();
 // run the inquirer prompts
     // list database tasks
-    // what would you like to do?
+        // what would you like to do?
         // view all employees
             // get employees from mysql instance
         // add employee

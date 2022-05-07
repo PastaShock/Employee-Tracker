@@ -13,6 +13,8 @@
             'Add Department'
         ]
     },
+];
+const extra = [
     {
         name: 'firstname',
         type: 'input',
