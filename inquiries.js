@@ -1,4 +1,4 @@
- const inquiries = [
+ const inquiries =
     {
         type: 'list',
         message: 'please choose an option',
@@ -12,9 +12,9 @@
             'Add Role',
             'Add Department'
         ]
-    },
-];
-const extra = [
+    };
+
+const addEmployee = [
     {
         name: 'firstname',
         type: 'input',
@@ -32,25 +32,11 @@ const extra = [
         choices: selectRole()
     },
     {
-        name: 'choice',
+        name: 'manager',
         type: 'rawlist',
         message: 'Who does the employee report to?',
         choices: selectManager()
     },
-    {
-        name: 'lastName',
-        type: 'rawlist',
-        choices: () => {
-            let lastName = [];
-            for (let i = 0; i < resizeBy.length; i++) {
-                lastName.push(res[i].last_name);
-            }
-            return lastName
-        }
-    },
-    {
-        message: 'What is the employee\'s last name?'
-    }
 ]
 
 function selectRole() {
@@ -61,4 +47,4 @@ function selectManager() {
     console.log('placeholder')
 }
 
-module.exports = inquiries
+module.exports = inquiries, addEmployee

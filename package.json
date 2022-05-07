@@ -4,7 +4,8 @@
   "description": "an app to create, add and update employees and roles",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "npm test",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,9 @@
   },
   "homepage": "https://github.com/PastaShock/Employee-Tracker#readme",
   "dependencies": {
+    "express": "^4.18.1",
     "inquirer": "^8.2.1",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.19.0"
   }
 }
