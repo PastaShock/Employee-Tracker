@@ -1,6 +1,6 @@
 // import { selectRole, selectManager } from 'index' 
-
-mainMenuChoices  = [
+const inquirer = require('inquirer')
+const mainMenuChoices = [
     'View all employees',
     'employees by role',
     'Employes by department',
@@ -14,15 +14,27 @@ mainMenuChoices  = [
     'quit'
 ]
 
- const inquiries =
-    {
-        type: 'list',
-        message: 'please choose an option',
-        name: 'option',
-        choices: [...mainMenuChoices]
-    };
+const inquiries = 
+        {
+            type: 'list',
+            message: 'please choose an option',
+            name: 'option',
+            choices: [
+                'View all employees',
+                'employees by role',
+                'Employes by department',
+                'Update employees',
+                'Add employee',
+                'View role',
+                'Add Role',
+                'update role',
+                'View departments',
+                'Add Department',
+                'quit'
+            ]
+        }
 
-const addEmployee = [
+const AddEmployee = [
     {
         name: 'firstname',
         type: 'input',
@@ -47,4 +59,4 @@ const addEmployee = [
     },
 ]
 
-module.exports = inquiries, addEmployee, mainMenuChoices
+module.exports = inquiries, AddEmployee, mainMenuChoices

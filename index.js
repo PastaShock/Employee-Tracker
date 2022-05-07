@@ -2,22 +2,10 @@ const inquirer = require('inquirer');
 // const express = require('express');
 // const routes = require('./routes');
 const mysql = require('mysql2');
-const { inquiries, mainMenuChoices} = require('./inquiries')
+// const { inquiries, mainMenuChoices, AddEmployee } = require('./inquiries')
 const connection = require('./config/connection');
 
-// const app = express();
 const PORT = process.env.PORT || 3001;
-
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-
-// turn on routes
-// app.use(routes);
-
-// turn on connection to db and server
-// sequelize.sync({ force: false }).then(() => { app.listen(PORT, () => console.log('Now listening'));
-// });
-
 
 // print the splash image to the terminal
 console.log(
@@ -40,30 +28,64 @@ console.log(
    `
 )
 
+const mainMenuChoices = [
+    'View all employees',
+    'employees by role',
+    'Employes by department',
+    'Update employees',
+    'Add employee',
+    'View role',
+    'Add Role',
+    'update role',
+    'View departments',
+    'Add Department',
+    'quit'
+]
 
-function main() {
-    let answersObj = [];
-    inquirer.prompt(inquiries).then(answers => {
-        answersObj = answers;
-    }).then(() => {
-        for (let i = 0; i < mainMenuChoices.length; i++) {
-            if (answersObj === mainMenuChoices[i]) {
-                mainMenuFunctions[i]();
-            }
+const inquiries = 
+        {
+            type: 'list',
+            message: 'please choose an option',
+            name: 'option',
+            choices: [
+                'View all employees',
+                'employees by role',
+                'Employes by department',
+                'Update employees',
+                'Add employee',
+                'View role',
+                'Add Role',
+                'update role',
+                'View departments',
+                'Add Department',
+                'quit'
+            ]
         }
-    })
-}
 
-// selectRole = () => {
-//     connection.promise().query(
-//         `SELECT role.id, role.title, department.name AS department
-//         FROM role
-//         INNER JOIN department ON role.department_id = department.id`, ( err, rows ) => {
-//             if (err) throw err;
-//             console.table(rows);
-//             main();
-//         });
-// };
+const AddEmployee = [
+    {
+        name: 'firstname',
+        type: 'input',
+        message: 'Enter the employee\'s first name'
+    },
+    {
+        name: 'lastname',
+        type: 'input',
+        message: 'Enter the Employee\'s last name'
+    },
+    {
+        name: 'role',
+        type: 'list',
+        message: 'What is the Employee\'s role?',
+        choices: ['array', 'of', 'stuff']
+    },
+    {
+        name: 'manager',
+        type: 'rawlist',
+        message: 'Who does the employee report to?',
+        choices: ['array', 'of', 'stuff']
+    },
+]
 
 // run the inquirer prompts
 // list database tasks
@@ -82,6 +104,9 @@ function employeeByDept() {
 // add employee
 function addEmployee() {
     console.log('adding employee')
+    inquirer.prompt(AddEmployee).tben(answers => {
+        console.log(answers)
+    })
 }
     // employee name?
     // employee role?
@@ -122,25 +147,20 @@ function quit() {
     connection.end()
 }
 
+mainMenuFunctions = {
+    addEmployee: () => {
+        addEmployee();
+    }
+}
 
-mainMenuFunctions = [
-    viewEmployees(),
-    employeeByRole(),
-    employeeByDept(),
-    updateEmployee(),
-    addEmployee(),
-    viewRole(),
-    addRole(),
-    updateRole(),
-    viewDept(),
-    addDept(),
-    quit()
-]
-
-connection.connect(err => {
-    if (err) throw err;
-    console.log(`connected as id ${connection.threadId}` )
-    // main();
-})
-
-main();
+function main() {
+    let option = inquirer.prompt(inquiries)
+    .then(answers => {return answers}).then(() => {
+    for (let i = 0; i < mainMenuChoices.length; i++) {
+        console.log(mainMenuChoices[i])
+        if (option === mainMenuChoices[i]) {
+            mainMenuFunctions[i]
+        }
+    }})
+}
+main()
