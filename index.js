@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const connection = require('./config/connection');
+require('dotenv').config();
+// const connection = require('./config/connection');
 const { inquiries, mainMenuChoices, AddEmployee } = require('./inquiries');
 const cTable = require('console.table');
 
@@ -26,7 +27,16 @@ console.log(
     =welcome to the SQL team manager app!=
    `
 )
-
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+});
+connection.connect(err => {
+    if (err) throw err;
+    console.log(`connect as id ${connection.threadId}`)
+});
 // const mainMenuChoices = [
 //     'View all employees',
 //     'employees by role',
@@ -59,24 +69,28 @@ mainMenu().then(
             case 'View all employees':
                 console.log('view all');
                 // create an SQL query that looks in the table employees and lists all
-                let sql = `SELECT employee.id, 
-                      employee.first_name, 
-                      employee.last_name, 
-                      role.title, 
+                let sql = `SELECT employees.id, 
+                      employees.first_name, 
+                      employees.last_name, 
+                      roles.title, 
                       department.name AS department,
-                      role.salary, 
-                      CONCAT (manager.first_name, " ", manager.last_name) AS manager
-               FROM employee
-                      LEFT JOIN role ON employee.role_id = role.id
-                      LEFT JOIN department ON role.department_id = department.id
-                      LEFT JOIN employee manager ON employee.manager_id = manager.id`;
-                      connection.promise().query(sql, (err, rows) => {
+                      roles.salary, 
+                      CONCAT (managers.first_name, " ", managers.last_name) AS manager
+               FROM employees
+                      LEFT JOIN roles ON employees.role_id = roles.id
+                      LEFT JOIN department ON roles.department_id = department.id
+                      LEFT JOIN employees managers ON employees.manager_id = managers.id`;
+                      connection.query(sql, (err, rows) => {
                           if (err) throw err;
                           console.table(rows);
                       }) 
                 break;
             case 'employees by role':
                 console.log('role: [...employees]')
+                mysql.query(`SHOW DATABASES;`, (err, rows) => {
+                    if (err) throw err;
+                    console.table.apply(rows);
+                })
                 break;
             case 'Employees by department':
 
