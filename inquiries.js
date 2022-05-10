@@ -19,19 +19,7 @@ const inquiries =
             type: 'list',
             message: 'please choose an option',
             name: 'option',
-            choices: [
-                'View all employees',
-                'employees by role',
-                'Employes by department',
-                'Update employees',
-                'Add employee',
-                'View role',
-                'Add Role',
-                'update role',
-                'View departments',
-                'Add Department',
-                'quit'
-            ]
+            choices: [...mainMenuChoices]
         }
 
 const AddEmployee = [
@@ -56,7 +44,9 @@ const AddEmployee = [
         type: 'rawlist',
         message: 'Who does the employee report to?',
         choices: ['array', 'of', 'stuff']
-    },
+    }
 ]
 
-module.exports = inquiries, AddEmployee, mainMenuChoices
+// AddEmployee = JSON.stringify(personNameRole)
+
+module.exports = { inquiries, mainMenuChoices, AddEmployee }
