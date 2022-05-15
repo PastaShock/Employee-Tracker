@@ -1,34 +1,54 @@
 --  show databases;
 use employee_db;
 
+DROP TABLE IF EXISTS employees;
+
+DROP TABLE IF EXISTS roles;
+
+DROP TABLE IF EXISTS department;
+
 CREATE TABLE department (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(30) NOT NULL
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    dep_name VARCHAR(30) NOT NULL UNIQUE
 );
 
 CREATE TABLE roles (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(30) NOT NULL,
     salary DECIMAL NOT NULL,
-    department_id INTEGER,
-    INDEX dep_ind (department_id),
-    CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE
-    SET
-        NULL
+    department_id int,
+    -- INDEX department_ind (department_id),
+    CONSTRAINT department_ind FOREIGN KEY (department_id) REFERENCES department(id)
 );
 
-create table if not exists employees (
-    id integer primary key auto_increment,
-    first_name varchar(30) not null,
-    last_name varchar(30) not null,
-    role_id integer,
-    index role_index (role_id),
-    constraint fk_role foreign key (role_id) references roles(id) on delete
-    set
-        null,
-        manager_id integer,
-        index manager_index (manager_id),
-        constraint fk_manager foreign key (manager_id) references employees(id) on delete
-    set
-        null
+-- CREATE TABLE IF NOT EXISTS manager (
+--     id int PRIMARY KEY auto_increment,
+--     first_name VARCHAR(30) NOT NULL,
+--     last_name VARCHAR(30) NOT NULL,
+--     INDEX role_index (ROLE),
+--     CONSTRAINT roleId
+--         FOREIGN KEY (role_id)
+--         REFERENCES roles(id)
+--         ON DELETE SET NULL
+-- )
+CREATE TABLE employees (
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    role_id int,
+    INDEX role_index (role_id),
+    CONSTRAINT FK_roleId FOREIGN KEY (role_id) REFERENCES roles(id)
+    department_id int,
+    -- INDEX department_ind (id),
+    CONSTRAINT department_ind FOREIGN KEY (department_id) REFERENCES department(id) -- manager_name VARCHAR(30) NOT NULL
+    -- INDEX manager_index (manager_id),
+    -- CONSTRAINT managerId
+    --     FOREIGN KEY (manager_id)
+    --     REFERENCES manager(id)
+    --     ON DELETE SET NULL
 );
+
+SELECT
+    'schemed successfully! Now sourcing seed data...';
+
+source db/seed.sql;

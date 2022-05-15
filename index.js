@@ -61,6 +61,13 @@ const menuAddEmployee = () => {
     ).then(answer => { console.log(answer) })
 }
 
+
+// end of file
+() => {
+    connection.query(`SOURCE db/seed.sql`)
+    return;
+}
+
 // inquirer.prompt(inquiries[0]).then(answer => {console.log(answer)})
 mainMenu().then(
     answer => {
