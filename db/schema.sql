@@ -20,7 +20,7 @@ CREATE TABLE roles (
     salary int NOT NULL,
     department_id int,
     -- INDEX department_ind (department_id),
-    CONSTRAINT department_ind FOREIGN KEY (department_id) REFERENCES department(id)
+    FOREIGN KEY (department_id) REFERENCES department(id)
 );
 
 CREATE TABLE employees (
