@@ -30,9 +30,9 @@ CREATE TABLE employees (
     role_id int,
     INDEX role_ind (role_id),
     CONSTRAINT role_ind FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL,
-    department_id int,
-    INDEX dep_ind (department_id),
-    FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
+    -- department_id int,
+    -- INDEX dep_ind (department_id),
+    -- FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
 );
 
 show tables;
