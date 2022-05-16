@@ -12,7 +12,7 @@ CREATE TABLE department (
     dep_name VARCHAR(30) NOT NULL UNIQUE
 );
 
-show tables;
+-- show tables;
 
 CREATE TABLE roles (
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -35,9 +35,9 @@ CREATE TABLE employees (
     -- FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
 );
 
-show tables;
+-- show tables;
 
-SELECT
-    'schemed successfully! Now sourcing seed data...';
+-- SELECT
+--     'schemed successfully! Now sourcing seed data...';
 
 source db/seed.sql;

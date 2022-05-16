@@ -4,8 +4,8 @@ VALUES
     ('product'),
     ('support');
 
-SELECT
-    'created departments, creating roles...';
+-- SELECT
+--     'created departments, creating roles...';
 
 INSERT INTO roles (title, salary, department_id)
 VALUES
@@ -15,8 +15,8 @@ VALUES
     ('developer', 0, 1),
     ('botanist', 0, 3);
 
-SELECT
-    'created roles. creating employees';
+-- SELECT
+--     'created roles. creating employees';
 
 -- removed department from user, it'll be sourced from the role
 INSERT INTO employees (first_name, last_name, role_id)
