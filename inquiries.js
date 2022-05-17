@@ -6,7 +6,7 @@ const mainMenuChoices = [
     'Employes by department',
     'Update employees',
     'Add employee',
-    'View role',
+    'View roles',
     'Add Role',
     'update role',
     'View departments',
