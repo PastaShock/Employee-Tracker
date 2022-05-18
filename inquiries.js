@@ -3,7 +3,7 @@ const inquirer = require('inquirer')
 const mainMenuChoices = [
     'View all employees',
     'employees by role',
-    'Employes by department',
+    'Employees by department',
     'Update employees',
     'Add employee',
     'View roles',

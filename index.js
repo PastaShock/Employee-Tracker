@@ -66,28 +66,13 @@ const mainMenu = () => {
                 console.log(answer.option)
                 switch (answer.option) {
                     case 'View all employees':
-                        viewEmployees();
+                        return viewEmployees();
                     case 'employees by role':
-                        employeesByRole();
+                        return employeesByRole();
                     case 'Employees by department':
-                        connection.query(`
-                    SELECT * FROM department 
-                    left join roles on roles.department_id = department.id 
-                    left join employees on roles.id = employees.role_id;
-                `, (err, rows) => {
-                            if (err) throw err;
-                            console.table.apply(rows);
-                        })
-                    // mainMenu();
+                        return employeesByDep();
                     case 'Update employees':
-                        inquirer.prompt(AddEmployee).then(answer => {
-                            console.log(AddEmployee[2].choices.indexOf(answer.role));
-                            connection.query(`
-                    INSERT INTO employees (first_name, last_name, role_id)
-                    VALUES ('${answer.firstname}', '${answer.lastname}', ${AddEmployee[2].choices.indexOf(answer.role) + 1})
-                    ;`)
-                        })
-                    // mainMenu();
+                        return updateEmployee();
                     case 'Add employee':
                         menuAddEmployee();
                     // inquirer.prompt(AddEmployee).then(answer => {
@@ -99,14 +84,16 @@ const mainMenu = () => {
                     // })
                     // mainMenu();
                     case 'View roles':
-                        connection.query(`
-                    SELECT roles.title, roles.salary, department.dep_name AS department FROM roles
-                    INNER JOIN department ON roles.department_id = department.id;
-                `, (err, rows) => {
-                            if (err) throw err;
-                            // console.log(rows);
-                            console.table(rows);
-                        })
+                        connection.promise().query(`
+                            SELECT roles.title, roles.salary, department.dep_name AS department FROM roles
+                            INNER JOIN department ON roles.department_id = department.id;
+                        `)
+                            .then(([rows, fields]) => {
+                                console.table(rows)
+                            })
+                            .then(
+                                mainMenu()
+                            )
                     // mainMenu();
                     case 'Add Role':
                         addRole();
@@ -135,24 +122,40 @@ const viewEmployees = () => {
     let sql = `SELECT * FROM employees
                 LEFT JOIN roles ON employees.role_id = roles.id
                 LEFT JOIN department ON roles.department_id = department.id`;
-    connection.query(sql, (err, rows) => {
-        if (err) throw err;
-        console.table(rows);
-    })
-    mainMenu();
+    connection.promise().query(sql)
+        .then(([rows, fields]) => {
+            console.table(rows)
+        }).then(
+            mainMenu()
+        )
 }
 
 const employeesByRole = () => {
     console.log('role: [...employees]')
-    connection.query(`
-                SELECT * FROM roles
+    let sql = `SELECT * FROM roles
                 LEFT JOIN employees ON roles.id = employees.role_id
-                LEFT JOIN department ON roles.department = department.id;
-                            `, (err, rows) => {
-        if (err) throw err;
-        console.table.apply(rows);
-    })
-    mainMenu();
+                LEFT JOIN department ON roles.department_id = department.id;
+            `
+    connection.promise().query(sql)
+        .then(([rows, fields]) => {
+            console.table(rows)
+        }).then(
+            mainMenu()
+        )
+}
+
+const employeesByDep = () => {
+    console.log('dep: [...employees]')
+    let sql = `SELECT * FROM department
+                LEFT JOIN roles ON department.id = roles.department_id
+                LEFT JOIN employees ON roles.id = employees.role_id;
+            `;
+    connection.promise().query(sql)
+        .then(([rows, fields]) => {
+            console.table(rows)
+        }).then(
+            mainMenu()
+        )
 }
 
 addRole = () => {
@@ -210,15 +213,35 @@ addRole = () => {
     // `)
 }
 
+const updateEmployee = () => {
+    inquirer.prompt(AddEmployee).then(answer => {
+        console.log(AddEmployee[2].choices.indexOf(answer.role));
+        connection.promise().query(`
+            INSERT INTO employees (first_name, last_name, role_id)
+            VALUES ('${answer.firstname}', '${answer.lastname}', ${AddEmployee[2].choices.indexOf(answer.role) + 1});
+        `)
+            .then(([rows, fields]) => {
+                console.table(rows)
+            })
+            .then(
+                mainMenu()
+            )
+    })
+    // mainMenu();
+}
+
 const menuAddEmployee = () => {
     return inquirer.prompt(AddEmployee).then(answer => {
         console.log(AddEmployee[2].choices.indexOf(answer.role));
-        connection.query(`
-                    INSERT INTO employees (first_name, last_name, role_id)
-                    VALUES ('${answer.firstname}', '${answer.lastname}', ${AddEmployee[2].choices.indexOf(answer.role) + 1})
-                    ;`)
+        connection.promise().query(`
+            INSERT INTO employees (first_name, last_name, role_id)
+            VALUES ('${answer.firstname}', '${answer.lastname}', ${AddEmployee[2].choices.indexOf(answer.role) + 1});
+        `)
+            .then(([rows, fields]) => {
+                console.table(rows)
+            })
+            .then(
+                mainMenu()
+            )
     })
-        .then(
-            mainMenu()
-        )
 }
