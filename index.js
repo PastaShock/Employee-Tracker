@@ -67,7 +67,7 @@ const mainMenu = () => {
                 switch (answer.option) {
                     case 'View all employees':
                         return getDeps();
-                        // return viewEmployees();
+                    // return viewEmployees();
                     case 'employees by role':
                         return employeesByRole();
                     case 'Employees by department':
@@ -211,39 +211,34 @@ const addRole = () => {
             // }
         }
     ])
-        .then(answer => {
-            // connection.promise().query(`SELECT dep_name, id FROM department`)
-            //     .then(([rows, fields]) => {
-            //         // let departments = rows.map(({ name, id }) => ({ name: name, value: id }))
-            //         let departments = connection.query(`SELECT dep_name FROM department`, deps => {
-            //             return deps;
-            //         })
-            answer.department = inquirer.prompt([
+        .then(async (answer) => {
+            let choices = await departments();
+            inquirer.prompt([
                 {
                     type: 'list',
                     name: 'department',
                     message: 'Please select the department for this role:',
-                    choices: ((getDeps())),
-                    validate: department => {
-                        if (!department) {
-                            console.log('please select an option')
-                        }
-                    }
+                    choices: choices,
+                    // validate: department => {
+                    //     if (!department) {
+                    //         console.log('please select an option')
+                    //     }
+                    // }
                 }
-            ])})
-            // console.log(answer)
-        // }).then( answer => {
-        //     console.log(answer);
-        //     mainMenu();
-        // });
-    // connection.query(`
-    // INSERT INTO roles (title, salary, department_id)
-    // VALUES ('${answer.title}', ${answer.salary}, ${answer.department_id})
-    // `)
-    // })
+            ])
+        }).then(answer => {
+            console.log(answer)
+            // connection.promise().query(
+            //     `
+            //         INSERT INTO roles (title, salary, department_id)
+            //         VALUES ('${answer.title}',${answer.salary},${answer.department});
+            //     `
+            // )
+        }
+        )
 };
 
-const getDeps = () => {
+let departments = () => {
     return new Promise((res, rej) => {
         connection.query(
             `SELECT dep_name FROM department;`,
@@ -258,9 +253,9 @@ const getDeps = () => {
         (res) => {
             let depArr = []
             res.forEach(element => {
-                depArr.push(element.dep_name) 
+                depArr.push(element.dep_name)
             })
-            console.log(depArr)
+            // console.log(depArr)
             return depArr
         })
 }
