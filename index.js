@@ -137,20 +137,116 @@ const employeesByDep = () => {
         )
 }
 
-const updateEmployee = () => {
-    inquirer.prompt(AddEmployee).then(answer => {
-        console.log(AddEmployee[2].choices.indexOf(answer.role));
-        connection.promise().query(`
-            INSERT INTO employees (first_name, last_name, role_id)
-            VALUES ('${answer.firstname}', '${answer.lastname}', ${AddEmployee[2].choices.indexOf(answer.role) + 1});
-        `)
-            .then(([rows, fields]) => {
-                console.table(rows)
-            })
-            .then(
-                mainMenu()
-            )
-    })
+const updateEmployee = async () => {
+    // set up for the update
+    // get the employees list to prompt in inquierer:
+    let choices = await employees();
+    // prompt the user to select an employee to update:
+    const answer = await inquirer.prompt([
+        {
+            name: 'employee',
+            type: 'list',
+            message: 'Select an employee to edit',
+            // choices is pulled from an sql query
+            choices: choices
+        }
+    ]);
+    // the return from inquierer is answer, we create an index to match that employee since sql starts at 1, not 0
+    empInd = choices.indexOf(answer.employee) + 1;
+    // log the selection to the user:
+    console.log(`selected employee ${answer.employee} @ ${empInd}`)
+    // get the information for the employee from the db
+    connection.promise().query(`SELECT * FROM employees
+                                LEFT JOIN roles on employees.role_id = roles.id
+                                WHERE employees.id = ${empInd};
+    `).then(
+        ([rows, fields]) => {
+            console.table(rows)
+        }
+    )
+    await inquirer.prompt([
+        {
+            name: 'empProps',
+            type: 'list',
+            message: 'Select a property to edit:',
+            choices: ['first_name', 'last_name', 'role', 'exit'],
+        }
+    ])
+        .then(async answer => {
+            switch (answer.empProps) {
+                case 'first_name':
+                    console.log('selected first')
+                    return inquirer.prompt([{
+                        name: 'first',
+                        type: 'input',
+                        message: 'Please enter the new first name',
+                    }]).then(answer => {
+                        connection.promise().query(`
+                        UPDATE employees SET first_name = '${answer.first}'
+                        WHERE id = ${empInd};
+                    `)
+                        console.log('Updated first name!')
+                        connection.promise().query(`
+                        SELECT * FROM employees
+                        LEFT JOIN roles ON employees.role_id = roles.id
+                        WHERE employees.id = ${empInd};
+                    `).then(([rows, fields]) => {
+                            console.table(rows)
+                        })
+                        mainMenu();
+                    })
+                case 'last_name':
+                    console.log('selected last')
+                    return inquirer.prompt([{
+                        name: 'last',
+                        type: 'input',
+                        message: 'Please enter the new last name',
+                    }]).then(answer => {
+                        connection.promise().query(`
+                        UPDATE employees SET last_name = '${answer.last}'
+                        WHERE id = ${empInd};
+                    `)
+                        console.log('Updated last name!')
+                        connection.promise().query(`
+                        SELECT * FROM employees
+                        LEFT JOIN roles ON employees.role_id = roles.id
+                        WHERE employees.id = ${empInd};
+                    `).then(([rows, fields]) => {
+                            console.table(rows)
+                        })
+                        mainMenu();
+                    })
+                case 'role':
+                    console.log('selected role')
+                    let choices = await roles();
+                    return inquirer.prompt([{
+                        name: 'role',
+                        type: 'list',
+                        message: 'Please enter the new role',
+                        choices: choices,
+                    }]).then(answer => {
+                        connection.promise().query(`
+                        UPDATE employees SET role_id = '${choices.indexOf(answer.role) + 1}'
+                        WHERE id = ${empInd};
+                    `)
+                        console.log('Updated role name!')
+                        connection.promise().query(`
+                        SELECT * FROM employees
+                        LEFT JOIN roles ON employees.role_id = roles.id
+                        WHERE employees.id = ${empInd};
+                    `).then(([rows, fields]) => {
+                            console.table(rows)
+                        })
+                        mainMenu();
+                    })
+                case 'exit':
+                    return mainMenu();
+                default:
+                    console.log('error')
+                    return process.exit();
+            }
+        })
+
 }
 
 const menuAddEmployee = async () => {
@@ -178,9 +274,9 @@ const menuAddEmployee = async () => {
             INSERT INTO employees (first_name, last_name, role_id)
             VALUES ('${answer.firstname}', '${answer.lastname}', ${choices.indexOf(answer.role) + 1});
         `)
-            console.log('added employee as:');
-            console.table(answer);
-            mainMenu();
+    console.log('added employee as:');
+    console.table(answer);
+    mainMenu();
 }
 
 const viewRoles = () => {
@@ -295,5 +391,27 @@ let roles = () => {
             })
             // console.log(depArr)
             return rolArr
+        })
+}
+
+let employees = () => {
+    return new Promise((res, rej) => {
+        connection.query(
+            `SELECT CONCAT(first_name, ' ', last_name) AS emp_name FROM employees;`,
+            (err, rows) => {
+                if (rows === undefined) {
+                    rej(new Error("Error"));
+                } else {
+                    res(rows);
+                }
+            })
+    }).then(
+        (res) => {
+            let empArr = []
+            res.forEach(element => {
+                empArr.push(element.emp_name)
+            })
+            // console.log(empArr)
+            return empArr
         })
 }
