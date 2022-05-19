@@ -74,34 +74,16 @@ const mainMenu = () => {
                     case 'Update employees':
                         return updateEmployee();
                     case 'Add employee':
-                        menuAddEmployee();
-                    // inquirer.prompt(AddEmployee).then(answer => {
-                    //     console.log(AddEmployee[2].choices.indexOf(answer.role));
-                    //     connection.query(`
-                    //     INSERT INTO employees (first_name, last_name, role_id)
-                    //     VALUES ('${answer.firstname}', '${answer.lastname}', ${AddEmployee[2].choices.indexOf(answer.role) + 1})
-                    //     ;`)
-                    // })
-                    // mainMenu();
+                        return menuAddEmployee();
                     case 'View roles':
-                        connection.promise().query(`
-                            SELECT roles.title, roles.salary, department.dep_name AS department FROM roles
-                            INNER JOIN department ON roles.department_id = department.id;
-                        `)
-                            .then(([rows, fields]) => {
-                                console.table(rows)
-                            })
-                            .then(
-                                mainMenu()
-                            )
-                    // mainMenu();
+                        return viewRoles();
                     case 'Add Role':
-                        addRole();
+                        return addRole();
                     case 'Update role':
 
                     // mainMenu();
                     case 'View departments':
-
+                        return showDeps();
                     // mainMenu();
                     case 'Add department':
 
@@ -158,61 +140,6 @@ const employeesByDep = () => {
         )
 }
 
-addRole = () => {
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'title',
-            message: 'Name the role\'s title: ',
-            validate: title => {
-                if (!title) {
-                    console.log('please enter a name');
-                };
-            }
-        },
-        {
-            type: 'input',
-            name: 'salary',
-            message: 'Enter in the salary:',
-            validate: salary => {
-                if (typeof (salary !== Number)) {
-                    console.log('please enter a valid salary')
-                }
-            }
-        }
-    ])
-        //.then(answer => {
-        //     connection.promise().query(`SELECT dep_name, id FROM department`, (err, rows) => {
-        //         if (err) throw err;
-        //         let departments = rows.map(({ name, id }) => ({ name: name, value: id }))
-        //         inquirer.prompt([
-        //             {
-        //                 type: 'list',
-        //                 name: 'department',
-        //                 message: 'Please select the department for this role:',
-        //                 choices: departments,
-        //                 validate: department => {
-        //                     if (!department) {
-        //                         console.log('please select an option')
-        //                     }
-        //                 }
-        //             }
-        //         ]).then(answer => {
-        //             dep_choice = answer.department;
-        //             console.log(answer)
-        //         })
-        //     })
-        // })
-        .then(answer => {
-            console.log(answer);
-            mainMenu();
-        })
-    // connection.query(`
-    // INSERT INTO roles (title, salary, department_id)
-    // VALUES ('${answer.title}', ${answer.salary}, ${answer.department_id})
-    // `)
-}
-
 const updateEmployee = () => {
     inquirer.prompt(AddEmployee).then(answer => {
         console.log(AddEmployee[2].choices.indexOf(answer.role));
@@ -244,4 +171,105 @@ const menuAddEmployee = () => {
                 mainMenu()
             )
     })
+}
+
+const viewRoles = () => {
+    let sql = `
+        SELECT title, salary, department_id, dep_name from roles
+        LEFT JOIN department on roles.department_id = department.id;
+    `
+    connection.promise().query(sql)
+        .then(([rows, fields]) => {
+            console.table(rows)
+        })
+        .then(
+            mainMenu()
+        )
+}
+
+addRole = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'title',
+            message: 'Name the role\'s title: ',
+            validate: title => {
+                if (!title) {
+                    console.log('please enter a name');
+                };
+            }
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'Enter in the salary:',
+            validate: salary => {
+                if (typeof (salary !== Number)) {
+                    console.log('please enter a valid salary')
+                }
+            }
+        }
+    ])
+        .then(answer => {
+            connection.promise().query(`SELECT dep_name, id FROM department`)
+                .then(([rows, fields]) => {
+                    // let departments = rows.map(({ name, id }) => ({ name: name, value: id }))
+                    let departments = connection.query(`SELECT dep_name FROM department`, deps => {
+                        return deps;
+                    })
+                    inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'department',
+                            message: 'Please select the department for this role:',
+                            choices: departments,
+                            validate: department => {
+                                if (!department) {
+                                    console.log('please select an option')
+                                }
+                            }
+                        }
+                    ])
+                })
+                .then(
+                    dep_choice = answer.department,
+                    console.log(answer)
+                )
+                .then(answer => {
+                    console.log(answer);
+                    mainMenu();
+                })
+            // connection.query(`
+            // INSERT INTO roles (title, salary, department_id)
+            // VALUES ('${answer.title}', ${answer.salary}, ${answer.department_id})
+            // `)
+        })
+};
+
+const showDeps = () => {
+    let departments = connection.query(`SELECT dep_name FROM department WHERE dep_name = ?;`, [dep_name])
+        // ([rows, fields]) => {
+        //     console.table(rows)
+        // }
+    // );
+    console.log(departments)
+    console.log(typeof departments)
+    const rows = departments[0];
+    const defs = departments[1];
+    rows.forEach(element => {
+        console.log('id', element.id)
+    });
+    // inquirer.prompt([
+    //     {
+    //         type: 'list',
+    //         name: 'department',
+    //         message: 'Please select the department for this role:',
+    //         choices: departments,
+    //         validate: department => {
+    //             if (!department) {
+    //                 console.log('please select an option')
+    //             }
+    //         }
+    //     }
+    // ])
 }
