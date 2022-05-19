@@ -83,7 +83,7 @@ const mainMenu = () => {
 
                     // mainMenu();
                     case 'View departments':
-                        return showDeps();
+                        return showDeps().then((res) => {console.log(res)})
                     // mainMenu();
                     case 'Add department':
 
@@ -247,18 +247,30 @@ addRole = () => {
 };
 
 const showDeps = () => {
-    let departments = connection.query(`SELECT dep_name FROM department WHERE dep_name = ?;`, [dep_name])
+    return new Promise((res,rej) => {
+        connection.query(
+            `SELECT dep_name FROM department;`,
+            (err,rows) => {
+                if (rows === undefined) {
+                    rej(new Error("Error"));
+                } else {
+                    res(rows);
+                }
+            })
+        })
+    }
+    // let departments = connection.query(`SELECT dep_name FROM department WHERE dep_name = ?;`)
         // ([rows, fields]) => {
         //     console.table(rows)
         // }
     // );
-    console.log(departments)
-    console.log(typeof departments)
-    const rows = departments[0];
-    const defs = departments[1];
-    rows.forEach(element => {
-        console.log('id', element.id)
-    });
+    // console.log(departments)
+    // console.log(typeof departments)
+    // const rows = departments[0];
+    // const defs = departments[1];
+    // rows.forEach(element => {
+    //     console.log('id', element.id)
+    // });
     // inquirer.prompt([
     //     {
     //         type: 'list',
@@ -272,4 +284,4 @@ const showDeps = () => {
     //         }
     //     }
     // ])
-}
+// }
