@@ -66,7 +66,8 @@ const mainMenu = () => {
                 console.log(answer.option)
                 switch (answer.option) {
                     case 'View all employees':
-                        return viewEmployees();
+                        return getDeps();
+                        // return viewEmployees();
                     case 'employees by role':
                         return employeesByRole();
                     case 'Employees by department':
@@ -83,7 +84,7 @@ const mainMenu = () => {
 
                     // mainMenu();
                     case 'View departments':
-                        return showDeps().then((res) => {console.log(res)})
+                        return showDeps().then((res) => { console.log(res) })
                     // mainMenu();
                     case 'Add department':
 
@@ -187,101 +188,79 @@ const viewRoles = () => {
         )
 }
 
-addRole = () => {
+const addRole = () => {
     inquirer.prompt([
         {
             type: 'input',
             name: 'title',
             message: 'Name the role\'s title: ',
-            validate: title => {
-                if (!title) {
-                    console.log('please enter a name');
-                };
-            }
+            // validate: title => {
+            //     if (!title) {
+            //         console.log('please enter a name');
+            //     };
+            // }
         },
         {
             type: 'input',
             name: 'salary',
             message: 'Enter in the salary:',
-            validate: salary => {
-                if (typeof (salary !== Number)) {
-                    console.log('please enter a valid salary')
-                }
-            }
+            // validate: salary => {
+            //     if (typeof (salary !== Number)) {
+            //         console.log('please enter a valid salary')
+            //     }
+            // }
         }
     ])
         .then(answer => {
-            connection.promise().query(`SELECT dep_name, id FROM department`)
-                .then(([rows, fields]) => {
-                    // let departments = rows.map(({ name, id }) => ({ name: name, value: id }))
-                    let departments = connection.query(`SELECT dep_name FROM department`, deps => {
-                        return deps;
-                    })
-                    inquirer.prompt([
-                        {
-                            type: 'list',
-                            name: 'department',
-                            message: 'Please select the department for this role:',
-                            choices: departments,
-                            validate: department => {
-                                if (!department) {
-                                    console.log('please select an option')
-                                }
-                            }
+            // connection.promise().query(`SELECT dep_name, id FROM department`)
+            //     .then(([rows, fields]) => {
+            //         // let departments = rows.map(({ name, id }) => ({ name: name, value: id }))
+            //         let departments = connection.query(`SELECT dep_name FROM department`, deps => {
+            //             return deps;
+            //         })
+            answer.department = inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'department',
+                    message: 'Please select the department for this role:',
+                    choices: ((getDeps())),
+                    validate: department => {
+                        if (!department) {
+                            console.log('please select an option')
                         }
-                    ])
-                })
-                .then(
-                    dep_choice = answer.department,
-                    console.log(answer)
-                )
-                .then(answer => {
-                    console.log(answer);
-                    mainMenu();
-                })
-            // connection.query(`
-            // INSERT INTO roles (title, salary, department_id)
-            // VALUES ('${answer.title}', ${answer.salary}, ${answer.department_id})
-            // `)
-        })
+                    }
+                }
+            ])})
+            // console.log(answer)
+        // }).then( answer => {
+        //     console.log(answer);
+        //     mainMenu();
+        // });
+    // connection.query(`
+    // INSERT INTO roles (title, salary, department_id)
+    // VALUES ('${answer.title}', ${answer.salary}, ${answer.department_id})
+    // `)
+    // })
 };
 
-const showDeps = () => {
-    return new Promise((res,rej) => {
+const getDeps = () => {
+    return new Promise((res, rej) => {
         connection.query(
             `SELECT dep_name FROM department;`,
-            (err,rows) => {
+            (err, rows) => {
                 if (rows === undefined) {
                     rej(new Error("Error"));
                 } else {
                     res(rows);
                 }
             })
+    }).then(
+        (res) => {
+            let depArr = []
+            res.forEach(element => {
+                depArr.push(element.dep_name) 
+            })
+            console.log(depArr)
+            return depArr
         })
-    }
-    // let departments = connection.query(`SELECT dep_name FROM department WHERE dep_name = ?;`)
-        // ([rows, fields]) => {
-        //     console.table(rows)
-        // }
-    // );
-    // console.log(departments)
-    // console.log(typeof departments)
-    // const rows = departments[0];
-    // const defs = departments[1];
-    // rows.forEach(element => {
-    //     console.log('id', element.id)
-    // });
-    // inquirer.prompt([
-    //     {
-    //         type: 'list',
-    //         name: 'department',
-    //         message: 'Please select the department for this role:',
-    //         choices: departments,
-    //         validate: department => {
-    //             if (!department) {
-    //                 console.log('please select an option')
-    //             }
-    //         }
-    //     }
-    // ])
-// }
+}
