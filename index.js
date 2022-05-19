@@ -151,23 +151,36 @@ const updateEmployee = () => {
                 mainMenu()
             )
     })
-    // mainMenu();
 }
 
-const menuAddEmployee = () => {
-    return inquirer.prompt(AddEmployee).then(answer => {
-        console.log(AddEmployee[2].choices.indexOf(answer.role));
-        connection.promise().query(`
+const menuAddEmployee = async () => {
+    let choices = await roles();
+    const answer = await inquirer.prompt([
+        {
+            name: 'firstname',
+            type: 'input',
+            message: 'Enter the employee\'s first name'
+        },
+        {
+            name: 'lastname',
+            type: 'input',
+            message: 'Enter the Employee\'s last name'
+        },
+        {
+            name: 'role',
+            type: 'list',
+            message: 'What is the Employee\'s role?',
+            choices: choices,
+        },
+    ]);
+    console.log(choices.indexOf(answer.role));
+    connection.promise().query(`
             INSERT INTO employees (first_name, last_name, role_id)
-            VALUES ('${answer.firstname}', '${answer.lastname}', ${AddEmployee[2].choices.indexOf(answer.role) + 1});
+            VALUES ('${answer.firstname}', '${answer.lastname}', ${choices.indexOf(answer.role) + 1});
         `)
-            .then(([rows, fields]) => {
-                console.table(rows)
-            })
-            .then(
-                mainMenu()
-            )
-    })
+            console.log('added employee as:');
+            console.table(answer);
+            mainMenu();
 }
 
 const viewRoles = () => {
@@ -234,6 +247,8 @@ const addRole = () => {
                     VALUES ('${answer.title}',${answer.salary},${choices.indexOf(answer.department) + 1});
                 `
                 )
+                console.log('added role as:')
+                console.table(answer)
                 mainMenu();
             })
         });
