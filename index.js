@@ -66,8 +66,7 @@ const mainMenu = () => {
                 console.log(answer.option)
                 switch (answer.option) {
                     case 'View all employees':
-                        return getDeps();
-                    // return viewEmployees();
+                        return viewEmployees();
                     case 'employees by role':
                         return employeesByRole();
                     case 'Employees by department':
@@ -82,13 +81,10 @@ const mainMenu = () => {
                         return addRole();
                     case 'Update role':
 
-                    // mainMenu();
                     case 'View departments':
                         return showDeps().then((res) => { console.log(res) })
-                    // mainMenu();
                     case 'Add department':
 
-                    // mainMenu();
                     case 'quit':
                         process.exit();
                     default:
@@ -211,6 +207,8 @@ const addRole = () => {
             // }
         }
     ])
+        // then asyncronously take the answer from the previous inquirer prompt and prompt for the department
+        // the department list is pulled from the db
         .then(async (answer) => {
             let choices = await departments();
             inquirer.prompt([
@@ -225,17 +223,20 @@ const addRole = () => {
                     //     }
                     // }
                 }
-            ])
-        }).then(answer => {
-            console.log(answer)
-            // connection.promise().query(
-            //     `
-            //         INSERT INTO roles (title, salary, department_id)
-            //         VALUES ('${answer.title}',${answer.salary},${answer.department});
-            //     `
-            // )
-        }
-        )
+                // then async'ly take the dep choice from the prev inquiry and append it to
+                // answers from the first inquiry
+                // and add it to the db
+            ]).then(async (depChoice) => {
+                answer.department = depChoice.department;
+                connection.promise().query(
+                    `
+                    INSERT INTO roles (title, salary, department_id)
+                    VALUES ('${answer.title}',${answer.salary},${choices.indexOf(answer.department) + 1});
+                `
+                )
+                mainMenu();
+            })
+        });
 };
 
 let departments = () => {
@@ -257,5 +258,27 @@ let departments = () => {
             })
             // console.log(depArr)
             return depArr
+        })
+}
+
+let roles = () => {
+    return new Promise((res, rej) => {
+        connection.query(
+            `SELECT title FROM roles;`,
+            (err, rows) => {
+                if (rows === undefined) {
+                    rej(new Error("Error"));
+                } else {
+                    res(rows);
+                }
+            })
+    }).then(
+        (res) => {
+            let rolArr = []
+            res.forEach(element => {
+                rolArr.push(element.title)
+            })
+            // console.log(depArr)
+            return rolArr
         })
 }

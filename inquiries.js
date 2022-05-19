@@ -1,5 +1,14 @@
 // import { selectRole, selectManager } from 'index' 
 const inquirer = require('inquirer')
+const mysql = require('mysql2')
+
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+});
+
 const mainMenuChoices = [
     'View all employees',
     'employees by role',
@@ -13,6 +22,27 @@ const mainMenuChoices = [
     'Add Department',
     'quit'
 ]
+
+let roles = async () => {
+    const res_1 = await new Promise((res, rej) => {
+        connection.query(
+            `SELECT title FROM roles;`,
+            (err, rows) => {
+                if (rows === undefined) {
+                    rej(new Error("Error"));
+                } else {
+                    res(rows);
+                }
+            });
+    });
+    let rolArr = [];
+    res_1.forEach(element => {
+        rolArr.push(element.title);
+    });
+    return rolArr;
+}
+
+rolesArr = roles()
 
 const inquiries = 
         {
@@ -37,14 +67,8 @@ const AddEmployee = [
         name: 'role',
         type: 'list',
         message: 'What is the Employee\'s role?',
-        choices: ['array', 'of', 'stuff']
+        choices: rolesArr,
     },
-    {
-        name: 'manager',
-        type: 'rawlist',
-        message: 'Who does the employee report to?',
-        choices: ['array', 'of', 'stuff']
-    }
 ]
 
 // AddEmployee = JSON.stringify(personNameRole)
