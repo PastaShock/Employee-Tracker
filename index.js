@@ -151,8 +151,10 @@ const updateEmployee = async () => {
             choices: choices
         }
     ]);
+    // get the employee id from the text of the queries concat
+    empInd = (answer.employee.split(':')[0]);
     // the return from inquierer is answer, we create an index to match that employee since sql starts at 1, not 0
-    empInd = choices.indexOf(answer.employee) + 1;
+    // empInd = choices.indexOf(answer.employee) + 1;
     // log the selection to the user:
     console.log(`selected employee ${answer.employee} @ ${empInd}`)
     // get the information for the employee from the db
@@ -203,18 +205,18 @@ const updateEmployee = async () => {
                         message: 'Please enter the new last name',
                     }]).then(answer => {
                         connection.promise().query(`
-                        UPDATE employees SET last_name = '${answer.last}'
-                        WHERE id = ${empInd};
-                    `)
+                            UPDATE employees SET last_name = '${answer.last}'
+                            WHERE id = ${empInd};
+                        `)
                         console.log('Updated last name!')
                         connection.promise().query(`
-                        SELECT * FROM employees
-                        LEFT JOIN roles ON employees.role_id = roles.id
-                        WHERE employees.id = ${empInd};
-                    `).then(([rows, fields]) => {
-                            console.table(rows)
-                        })
-                        mainMenu();
+                            SELECT * FROM employees
+                            LEFT JOIN roles ON employees.role_id = roles.id
+                            WHERE employees.id = ${empInd};
+                        `).then(([rows, fields]) => {
+                                console.table(rows)
+                            })
+                            mainMenu();
                     })
                 case 'role':
                     console.log('selected role')
@@ -539,7 +541,7 @@ let roles = () => {
 let employees = () => {
     return new Promise((res, rej) => {
         connection.query(
-            `SELECT CONCAT(first_name, ' ', last_name) AS emp_name FROM employees;`,
+            `SELECT CONCAT(id, ': ', first_name, ' ', last_name) AS emp_name FROM employees;`,
             (err, rows) => {
                 if (rows === undefined) {
                     rej(new Error("Error"));
