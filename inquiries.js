@@ -19,7 +19,7 @@ const mainMenuChoices = [
     'Add Role',
     'Update role',
     'View departments',
-    'Add Department',
+    'Add department',
     'quit'
 ]
 
