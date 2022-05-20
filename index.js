@@ -80,7 +80,7 @@ const mainMenu = () => {
                     case 'Add Role':
                         return addRole();
                     case 'Update role':
-
+                        return updateRole();
                     case 'View departments':
                         return showDeps().then((res) => { console.log(res) })
                     case 'Add department':
@@ -349,6 +349,128 @@ const addRole = () => {
             })
         });
 };
+
+const updateRole = async () => {
+    // set up for updating
+    // set the choices to array of roles
+    let choices = await roles();
+    // prompt the user to select a role
+    const answer = await inquirer.prompt([
+        {
+            name: 'prop',
+            type: 'list',
+            message: 'Please select a role to update:',
+            // choices is array from sql query
+            choices: choices
+        }
+    ])
+    // set the index of the role to a value
+    let roleInd = choices.indexOf(answer.prop) + 1;
+    // log the selection to the user
+    console.log(`selected role: ${answer.prop} @ ${roleInd}`)
+    // get the information from the db
+    connection.promise().query(`
+        SELECT * FROM roles
+        LEFT JOIN department on roles.department_id = department.id
+        WHERE roles.id = ${roleInd};
+    `).then(
+        ([rows, fields]) => {
+            console.table(rows)
+        }
+    )
+    await inquirer.prompt([
+        {
+            name: 'prop',
+            type: 'list',
+            message: 'Please select a property to update',
+            choices: ['title', 'salary', 'department'],
+        }
+    ])
+    .then(
+        async answer => {
+            console.log(answer.prop)
+            switch (answer.prop) {
+                case 'title':
+                    console.log('selected title')
+                    return inquirer.prompt([{
+                        name: 'prop',
+                        type: 'input',
+                        message: 'Enter the name of the role:',
+                        // validate: prop => {
+                        //     if (!prop) {
+                        //         console.log('please enter a value')
+                        //     } else if (typeof (prop) != String) {
+                        //         console.log('wrong type of input')
+                        //     }
+                        // }
+                    }]).then(
+                        answer => {
+                            connection.promise().query(`
+                                UPDATE roles SET title = '${answer.prop}'
+                                WHERE id = ${roleInd};
+                            `)
+                            console.log('updated!');
+                            connection.promise().query(`
+                                SELECT * FROM roles
+                                LEFT JOIN department on roles.department_id = department.id
+                                WHERE roles.id = ${roleInd};
+                            `).then(([rows, fields]) => {
+                                console.table(rows)
+                            })
+                            mainMenu();
+                        }
+                    )
+                case 'salary':
+                    return inquirer.prompt([{
+                        name: 'prop',
+                        type: 'input',
+                        message: 'enter the new salary:',
+                        // validate: prop => {
+                        //     if (!prop) {
+                        //         console.log('please enter a value')
+                        //     } else if (typeof (prop) != number) {
+                        //         console.log('wrong type of input')
+                        //     }
+                        // }
+                    }]).then(
+                        answer => {
+                            connection.query(`
+                                update roles set salary = ${answer.prop}
+                                where id = ${roleInd};
+                            `)
+                            mainMenu();
+                        }
+                    )
+                case 'department':
+                    let choices = await departments();
+                    return inquirer.prompt([{
+                        name: 'prop',
+                        type: 'list',
+                        message: 'select a department:',
+                        choices: choices,
+                    }]).then(
+                        answer => {
+                            connection.query(`
+                                update roles set department_id = ${choices.indexOf(answer.prop) + 1}
+                                where id = ${roleInd};
+                            `);
+                            connection.promise().query(`
+                                SELECT * FROM roles LEFT JOIN department on roles.department_id = department.id
+                                WHERE roles.id = ${roleInd}; 
+                            `)
+                                .then(([rows, fields]) => {
+                                    console.table(rows)
+                                })
+                            mainMenu();
+                        }
+                    )
+                case 'default':
+                    console.log('error')
+                    return mainMenu();
+            }
+        }
+    )
+}
 
 let departments = () => {
     return new Promise((res, rej) => {
