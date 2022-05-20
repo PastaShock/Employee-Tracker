@@ -25,7 +25,7 @@ github URL: https://github.com/PastaShock/Employee-Tracker
 ### Why did I make this project?
 I built this project to create an application that connects to an sql database and allows a user to manage the database.
 
-![screenshot of the app](assets/screenshot.gif)
+![screenshot of the app](Assets/screenshot.gif)
 
 ### What makes this app standout?
 This project stands out because it pulls the titles and departments on request so the lists are always up to date.
