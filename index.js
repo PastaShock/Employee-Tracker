@@ -26,37 +26,20 @@ console.log(
     =welcome to the SQL team manager app!=
    `
 )
+// create the connection to the sql server
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
 });
+// create an error case for a connection fail
 connection.connect(err => {
     if (err) throw err;
     console.log(`connect as id ${connection.threadId}`)
     mainMenu();
 });
-// const mainMenuChoices = [
-//     'View all employees',
-//     'employees by role',
-//     'Employes by department',
-//     'Update employees',
-//     'Add employee',
-//     'View role',
-//     'Add Role',
-//     'update role',
-//     'View departments',
-//     'Add Department',
-//     'quit'
-// ]
-
-// end of file
-// () => {
-//     connection.query(`SOURCE db/seed.sql`)
-//     return;
-// }
-
+// prompt the user with menu 
 const mainMenu = () => {
     inquirer.prompt([inquiries])
         .then(answer => { return answer })
@@ -75,6 +58,8 @@ const mainMenu = () => {
                         return updateEmployee();
                     case 'Add employee':
                         return menuAddEmployee();
+                    case 'Remove employee':
+                        return menuRemoveEmployee();
                     case 'View roles':
                         return viewRoles();
                     case 'Add Role':
@@ -82,7 +67,7 @@ const mainMenu = () => {
                     case 'Update role':
                         return updateRole();
                     case 'View departments':
-                        return showDeps().then((res) => { console.log(res) })
+                        return menuShowDepartments();
                     case 'Add department':
                         return menuAddDept();
                     case 'quit':
@@ -281,6 +266,29 @@ const menuAddEmployee = async () => {
     mainMenu();
 }
 
+const menuRemoveEmployee = async () => {
+    let choices = await employees();
+    const answer = await inquirer.prompt([{
+        name: 'prop',
+        type: 'list',
+        message: 'Select an employee to delete',
+        choices: choices,
+    }]).then( answer => {
+        empInd = answer.prop.split(':')[0];
+        console.log(`employee index: ${empInd}`);
+        connection.promise().query(`
+            DELETE FROM employees WHERE id = ${empInd};
+        `)
+        console.log('delete employee');
+        connection.promise().query(`
+            SELECT * FROM employees;
+        `).then(([rows, fields]) => {
+            console.table(rows);
+            mainMenu();
+        })
+    })
+}
+
 const viewRoles = () => {
     let sql = `
         SELECT title, salary, department_id, dep_name from roles
@@ -472,6 +480,15 @@ const updateRole = async () => {
                 }
             }
         )
+}
+
+const menuShowDepartments = () => {
+    connection.promise().query(`
+        SELECT * FROM department LEFT JOIN roles ON department.id = roles.department_id;
+    `).then(([rows, fields]) => {
+        console.table(rows)
+        mainMenu();
+    })
 }
 
 const menuAddDept = () => {
