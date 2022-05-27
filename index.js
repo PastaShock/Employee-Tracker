@@ -25,9 +25,11 @@ console.log(
 )
 // prompt the user with menu 
 const mainMenu = () => {
+    // call inquirer with the inquiries for the main menu
     inquirer.prompt([inquiries])
+    // on selection return an answer
         .then(answer => { return answer })
-        // inquirer.prompt(inquiries[0]).then(answer => {console.log(answer)})
+        // with the answer select the next function
         .then(
             answer => {
                 console.log(answer.option)
@@ -56,6 +58,7 @@ const mainMenu = () => {
                         return menuAddDept();
                     case 'quit':
                         process.exit();
+                        // on error case:
                     default:
                         console.log('no options selected? YEETing')
                         process.exit();
@@ -63,6 +66,7 @@ const mainMenu = () => {
             }
         )
 }
+// menu functions 
 
 const viewEmployees = () => {
     console.log('view all');
@@ -123,7 +127,6 @@ const updateEmployee = async () => {
     // get the employee id from the text of the queries concat
     empInd = (answer.employee.split(':')[0]);
     // the return from inquierer is answer, we create an index to match that employee since sql starts at 1, not 0
-    // empInd = choices.indexOf(answer.employee) + 1;
     // log the selection to the user:
     console.log(`selected employee ${answer.employee} @ ${empInd}`)
     // get the information for the employee from the db
@@ -221,7 +224,9 @@ const updateEmployee = async () => {
 }
 
 const menuAddEmployee = async () => {
+    // pull the list of employees from the db
     let choices = await roles();
+    // ask for what employee property is to be changed
     const answer = await inquirer.prompt([
         {
             name: 'firstname',
@@ -293,21 +298,11 @@ const addRole = () => {
             type: 'input',
             name: 'title',
             message: 'Name the role\'s title: ',
-            // validate: title => {
-            //     if (!title) {
-            //         console.log('please enter a name');
-            //     };
-            // }
         },
         {
             type: 'input',
             name: 'salary',
             message: 'Enter in the salary:',
-            // validate: salary => {
-            //     if (typeof (salary !== Number)) {
-            //         console.log('please enter a valid salary')
-            //     }
-            // }
         }
     ])
         // then asyncronously take the answer from the previous inquirer prompt and prompt for the department
@@ -320,11 +315,6 @@ const addRole = () => {
                     name: 'department',
                     message: 'Please select the department for this role:',
                     choices: choices,
-                    // validate: department => {
-                    //     if (!department) {
-                    //         console.log('please select an option')
-                    //     }
-                    // }
                 }
                 // then async'ly take the dep choice from the prev inquiry and append it to
                 // answers from the first inquiry
@@ -390,13 +380,6 @@ const updateRole = async () => {
                             name: 'prop',
                             type: 'input',
                             message: 'Enter the name of the role:',
-                            // validate: prop => {
-                            //     if (!prop) {
-                            //         console.log('please enter a value')
-                            //     } else if (typeof (prop) != String) {
-                            //         console.log('wrong type of input')
-                            //     }
-                            // }
                         }]).then(
                             answer => {
                                 connection.promise().query(`
@@ -419,13 +402,6 @@ const updateRole = async () => {
                             name: 'prop',
                             type: 'input',
                             message: 'enter the new salary:',
-                            // validate: prop => {
-                            //     if (!prop) {
-                            //         console.log('please enter a value')
-                            //     } else if (typeof (prop) != number) {
-                            //         console.log('wrong type of input')
-                            //     }
-                            // }
                         }]).then(
                             answer => {
                                 connection.query(`
@@ -512,7 +488,6 @@ let departments = () => {
             res.forEach(element => {
                 depArr.push(element.dep_name)
             })
-            // console.log(depArr)
             return depArr
         })
 }
@@ -534,7 +509,6 @@ let roles = () => {
             res.forEach(element => {
                 rolArr.push(element.title)
             })
-            // console.log(depArr)
             return rolArr
         })
 }
@@ -556,7 +530,6 @@ let employees = () => {
             res.forEach(element => {
                 empArr.push(element.emp_name)
             })
-            // console.log(empArr)
             return empArr
         })
 }
