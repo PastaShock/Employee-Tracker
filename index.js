@@ -23,6 +23,14 @@ console.log(
     =welcome to the SQL team manager app!=
    `
 )
+
+// create an error case for a connection fail
+connection.connect(err => {
+    if (err) throw err;
+    console.log(`connect as id ${connection.threadId}`)
+    mainMenu();
+});
+
 // prompt the user with menu 
 const mainMenu = () => {
     // call inquirer with the inquiries for the main menu

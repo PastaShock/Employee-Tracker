@@ -8,11 +8,4 @@ const connection = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
-// create an error case for a connection fail
-connection.connect(err => {
-    if (err) throw err;
-    console.log(`connect as id ${connection.threadId}`)
-    mainMenu();
-});
-
 module.exports = connection;

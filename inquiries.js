@@ -1,14 +1,8 @@
-// import { selectRole, selectManager } from 'index' 
-const inquirer = require('inquirer')
-const mysql = require('mysql2')
+// pull in the connection from config
+// because we need to access the db for inquirer list options
+const connection = require('./config/connection');
 
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-});
-
+// always double check capitalizations on menu options
 const mainMenuChoices = [
     'View all employees',
     'employees by role',
@@ -71,7 +65,5 @@ const AddEmployee = [
         choices: rolesArr,
     },
 ]
-
-// AddEmployee = JSON.stringify(personNameRole)
 
 module.exports = { inquiries, mainMenuChoices, AddEmployee }
