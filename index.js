@@ -1,10 +1,7 @@
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
 require('dotenv').config();
-// const connection = require('./config/connection');
+const connection = require('./config/connection');
 const { inquiries, mainMenuChoices, AddEmployee } = require('./inquiries');
-
-const PORT = process.env.PORT || 3001;
 
 // print the splash image to the terminal
 console.log(
@@ -26,19 +23,6 @@ console.log(
     =welcome to the SQL team manager app!=
    `
 )
-// create the connection to the sql server
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-});
-// create an error case for a connection fail
-connection.connect(err => {
-    if (err) throw err;
-    console.log(`connect as id ${connection.threadId}`)
-    mainMenu();
-});
 // prompt the user with menu 
 const mainMenu = () => {
     inquirer.prompt([inquiries])

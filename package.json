@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npm test",
-    "start": "node index.js"
+    "start": "node index.js",
+    "seed": "mysql -e 'source db/schema.sql'"
   },
   "repository": {
     "type": "git",
